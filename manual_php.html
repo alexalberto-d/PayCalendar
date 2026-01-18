@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual PHP - PayCalendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .code-block {
+            margin: 1.5rem 0;
+        }
+
+        pre code {
+            border-radius: 0.5rem;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                Manual PHP - PayCalendar
+            </h1>
+            <p class="text-gray-600 mt-1">Guía práctica completa de desarrollo PHP MVC</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="max-w-6xl mx-auto px-6 py-6">
+        <div class="glass rounded-xl p-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+            <a href="#intro" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">1.
+                Introducción</a>
+            <a href="#estructura" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">2.
+                Estructura</a>
+            <a href="#mvc" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">3. MVC</a>
+            <a href="#rutas" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">4. Rutas</a>
+            <a href="#poo" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">5. POO</a>
+            <a href="#imports" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">6. Imports</a>
+            <a href="#metodos" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">7. Métodos</a>
+            <a href="#flujo" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">8. Flujo</a>
+            <a href="#conclusion" class="px-4 py-2 hover:bg-blue-100 rounded-lg transition-colors text-sm">9.
+                Conclusión</a>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-6xl mx-auto px-6 pb-12 space-y-8">
+
+        <!-- 1. INTRODUCCIÓN -->
+        <section id="intro" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">1. Introducción</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🎯 Objetivo del Proyecto</h3>
+                    <p class="text-gray-700">PayCalendar es una aplicación web para gestionar suscripciones y gastos
+                        recurrentes. Este manual te enseñará PHP desde cero usando este proyecto como caso práctico
+                        real.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">📚 Qué aprenderás</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                        <li>Arquitectura MVC (Model-View-Controller)</li>
+                        <li>Programación Orientada a Objetos en PHP</li>
+                        <li>Sistema de rutas y endpoints</li>
+                        <li>Conexión y consultas a base de datos SQLite</li>
+                        <li>Autenticación con sesiones</li>
+                        <li>Integración Frontend-Backend</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">⚙️ Requisitos Previos</h3>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                        <p class="font-semibold text-blue-900">Software necesario:</p>
+                        <ul class="list-disc list-inside text-blue-800 mt-2 space-y-1">
+                            <li>PHP 8.0 o superior</li>
+                            <li>Extensiones: PDO, SQLite, MBString</li>
+                            <li>Servidor web (Apache/Nginx o PHP built-in)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">💻 Instalación en Windows</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash"># 1. Descargar PHP desde php.net
+# 2. Extraer en C:\php
+# 3. Agregar C:\php al PATH del sistema
+# 4. Verificar instalación
+php -v
+
+# 5. Iniciar servidor en el proyecto
+cd C:\ruta\al\proyecto
+php -S localhost:8000 -t public</code></pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🐧 Instalación en Linux (Ubuntu/Debian)</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash"># Actualizar repositorios
+sudo apt update
+
+# Instalar PHP y extensiones
+sudo apt install php8.1 php8.1-sqlite3 php8.1-mbstring
+
+# Verificar instalación
+php -v
+
+# Iniciar servidor en el proyecto
+cd /ruta/al/proyecto
+php -S localhost:8000 -t public</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ESTRUCTURA -->
+        <section id="estructura" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">2. Estructura del Proyecto
+            </h2>
+
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-gray-800">📁 Árbol de Carpetas</h3>
+                <div class="code-block">
+                    <pre><code class="language-plaintext">PayCalendar/
+├── app/
+│   ├── Controllers/      # Lógica de negocio y control de flujo
+│   │   ├── ApiController.php
+│   │   └── AuthController.php
+│   ├── Models/          # Interacción con base de datos
+│   │   ├── Subscription.php
+│   │   └── User.php
+│   ├── Views/           # Interfaz de usuario (HTML/PHP)
+│   │   ├── dashboard.php
+│   │   ├── login.php
+│   │   ├── register.php
+│   │   └── layout.php
+│   └── Core/            # Componentes base del framework
+│       └── Database.php
+├── database/
+│   ├── database.sqlite  # Base de datos SQLite
+│   └── schema.sql       # Esquema inicial
+├── public/              # Punto de entrada y assets públicos
+│   ├── index.php        # Router principal
+│   └── assets/
+│       ├── css/
+│       └── js/
+└── config.php           # Configuración global</code></pre>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6">📋 Función de cada carpeta</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-blue-600 mb-2">Controllers/</h4>
+                        <p class="text-sm text-gray-700">Procesan las solicitudes HTTP, coordinan los modelos y
+                            devuelven respuestas.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-blue-600 mb-2">Models/</h4>
+                        <p class="text-sm text-gray-700">Representan la estructura de datos y manejan operaciones CRUD
+                            en la base de datos.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-blue-600 mb-2">Views/</h4>
+                        <p class="text-sm text-gray-700">Contienen el HTML y la presentación que ve el usuario final.
+                        </p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-blue-600 mb-2">public/</h4>
+                        <p class="text-sm text-gray-700">Única carpeta accesible desde el navegador. Contiene el
+                            index.php (router) y archivos estáticos.</p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mt-6">
+                    <p class="font-semibold text-yellow-900">✨ Buenas Prácticas:</p>
+                    <ul class="list-disc list-inside text-yellow-800 mt-2 space-y-1">
+                        <li>Separar lógica de negocio (Controllers) de la presentación (Views)</li>
+                        <li>Usar nombres descriptivos en inglés para archivos y clases</li>
+                        <li>Un archivo por clase siguiendo PSR-4</li>
+                        <li>Mantener el código de base de datos solo en Models</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MVC -->
+        <section id="mvc" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">3. Arquitectura MVC</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🏗️ ¿Qué es MVC?</h3>
+                    <p class="text-gray-700 mb-4">MVC (Model-View-Controller) es un patrón de diseño que separa la
+                        aplicación en tres componentes:</p>
+
+                    <div class="mermaid bg-white p-6 rounded-lg">
+                        graph LR
+                        A[Usuario] -->|Solicitud HTTP| B[Controller]
+                        B -->|Consulta datos| C[Model]
+                        C -->|Retorna datos| B
+                        B -->|Pasa datos| D[View]
+                        D -->|HTML| A
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-900 mb-2">📊 Model</h4>
+                        <p class="text-sm text-blue-800">Gestiona la lógica de datos y base de datos</p>
+                        <code class="text-xs bg-blue-100 px-2 py-1 rounded mt-2 block">Subscription.php</code>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-900 mb-2">👁️ View</h4>
+                        <p class="text-sm text-green-800">Presenta la información al usuario</p>
+                        <code class="text-xs bg-green-100 px-2 py-1 rounded mt-2 block">dashboard.php</code>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-purple-900 mb-2">🎮 Controller</h4>
+                        <p class="text-sm text-purple-800">Coordina Model y View</p>
+                        <code class="text-xs bg-purple-100 px-2 py-1 rounded mt-2 block">ApiController.php</code>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-8">📝 Ejemplo Básico de MVC</h3>
+                <p class="text-gray-700 mb-4">Antes de ver el proyecto completo, entendamos MVC con un ejemplo simple:
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="code-block">
+                        <p class="font-semibold text-sm text-gray-700 mb-2">Model (Usuario.php):</p>
+                        <pre><code class="language-php">&lt;?php
+class Usuario {
+    public static function obtenerTodos() {
+        // Simula consulta
+        return [
+            ['id' => 1, 'nombre' => 'Juan'],
+            ['id' => 2, 'nombre' => 'María']
+        ];
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="code-block">
+                        <p class="font-semibold text-sm text-gray-700 mb-2">Controller (UsuarioController.php):</p>
+                        <pre><code class="language-php">&lt;?php
+class UsuarioController {
+    public function listar() {
+        // Obtiene datos del Model
+        $usuarios = Usuario::obtenerTodos();
+        
+        // Pasa a la View
+        include 'listaView.php';
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="code-block">
+                        <p class="font-semibold text-sm text-gray-700 mb-2">View (listaView.php):</p>
+                        <pre><code class="language-php">&lt;h1>Usuarios&lt;/h1>
+&lt;ul>
+&lt;?php foreach($usuarios as $u): ?>
+    &lt;li><?= $u['nombre'] ?>&lt;/li>
+&lt;?php endforeach; ?>
+&lt;/ul></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. RUTAS -->
+        <section id="rutas" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">4. Sistema de Rutas
+                (Endpoints)</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🛣️ ¿Qué es un Endpoint?</h3>
+                    <p class="text-gray-700">Un endpoint es una URL específica que recibe peticiones HTTP y ejecuta una
+                        acción. Por ejemplo:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mt-3 font-mono text-sm">
+                        <code>GET /api/subscriptions → Lista todas las suscripciones</code><br>
+                        <code>POST /api/subscriptions → Crea una nueva suscripción</code><br>
+                        <code>DELETE /api/subscriptions/5 → Elimina la suscripción con ID 5</code>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6">🎯 Implementación en PayCalendar</h3>
+                <p class="text-gray-700 mb-4">El archivo <code
+                        class="bg-gray-200 px-2 py-1 rounded">public/index.php</code> actúa como router principal:</p>
+
+                <div class="code-block">
+                    <pre><code class="language-php">&lt;?php
+session_start();
+require_once __DIR__ . '/../config.php';
+
+// Cargar clases necesarias
+require_once __DIR__ . '/../app/Core/Database.php';
+require_once __DIR__ . '/../app/Models/User.php';
+require_once __DIR__ . '/../app/Models/Subscription.php';
+require_once __DIR__ . '/../app/Controllers/ApiController.php';
+require_once __DIR__ . '/../app/Controllers/AuthController.php';
+
+use App\Core\Database;
+
+// Inicializar base de datos
+Database::getInstance();
+
+// Obtener la ruta solicitada
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
+
+// --- RUTAS DE AUTENTICACIÓN ---
+if ($uri === '/login' && $method === 'GET') {
+    // Mostrar formulario de login
+    include __DIR__ . '/../app/Views/login.php';
+    exit;
+}
+
+if ($uri === '/login' && $method === 'POST') {
+    // Procesar login
+    $controller = new App\Controllers\AuthController();
+    $controller->login();
+    exit;
+}
+
+// --- RUTAS DE API ---
+if (preg_match('/^\/api\/subscriptions/', $uri)) {
+    $controller = new App\Controllers\ApiController();
+    
+    if ($method === 'GET' && $uri === '/api/subscriptions') {
+        $controller->index(); // Listar todas
+    } elseif ($method === 'POST' && $uri === '/api/subscriptions') {
+        $controller->create(); // Crear nueva
+    } elseif ($method === 'DELETE' && preg_match('/\/api\/subscriptions\/(\d+)/', $uri, $matches)) {
+        $controller->delete($matches[1]); // Eliminar por ID
+    }
+    exit;
+}</code></pre>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6">🔄 Flujo de una Petición</h3>
+                <div class="mermaid bg-white p-6 rounded-lg">
+                    sequenceDiagram
+                    participant B as Navegador
+                    participant R as Router (index.php)
+                    participant C as Controller
+                    participant M as Model
+                    participant DB as Database
+
+                    B->>R: GET /api/subscriptions
+                    R->>C: ApiController->index()
+                    C->>M: Subscription::all($userId)
+                    M->>DB: SELECT * FROM subscriptions
+                    DB->>M: [datos]
+                    M->>C: [array de subs]
+                    C->>B: JSON response
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. POO -->
+        <section id="poo" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">5. Clases y POO en PHP
+            </h2>
+
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-gray-800">🎓 Conceptos Fundamentales</h3>
+
+                <div class="code-block">
+                    <p class="font-semibold text-sm text-gray-700 mb-2">Ejemplo completo con todos los conceptos:</p>
+                    <pre><code class="language-php">&lt;?php
+namespace App\Models; // Organización de código
+
+use App\Core\Database; // Importar otra clase
+
+class Subscription // Definición de clase
+{
+    // Propiedades (variables de clase)
+    private $id;          // Solo accesible dentro de esta clase
+    protected $name;      // Accesible en esta clase y subclases
+    public $price;        // Accesible desde cualquier lugar
+    
+    // Propiedad estática (compartida por todas las instancias)
+    private static $count = 0;
+    
+    // Constructor: se ejecuta al crear un objeto
+    public function __construct($name, $price) {
+        $this->name = $name;
+        $this->price = $price;
+        self::$count++; // 'self' para acceder a miembros estáticos
+    }
+    
+    // Método estático: se llama sin instanciar la clase
+    public static function all($userId) {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT * FROM subscriptions WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
+    }
+    
+    // Método de instancia
+    public function calcularAnual() {
+        return $this->price * 12;
+    }
+    
+    // Getter (método público para acceder a propiedad privada)
+    public function getName() {
+        return $this->name;
+    }
+}
+
+// USO:
+// Método estático (sin crear objeto)
+$subs = Subscription::all(1);
+
+// Crear instancia y usar métodos
+$sub = new Subscription("Netflix", 15.99);
+echo $sub->calcularAnual(); // 191.88</code></pre>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-8">📋 Tabla de Modificadores de Acceso</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 border">Modificador</th>
+                                <th class="px-4 py-2 border">Clase</th>
+                                <th class="px-4 py-2 border">Subclase</th>
+                                <th class="px-4 py-2 border">Fuera de clase</th>
+                                <th class="px-4 py-2 border">Cuándo usar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">public</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-sm">Métodos que otros usen</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">protected</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-center">❌</td>
+                                <td class="px-4 py-2 border text-sm">Datos internos compartidos</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">private</td>
+                                <td class="px-4 py-2 border text-center">✅</td>
+                                <td class="px-4 py-2 border text-center">❌</td>
+                                <td class="px-4 py-2 border text-center">❌</td>
+                                <td class="px-4 py-2 border text-sm">Datos muy sensibles</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-8">🔑 Conceptos Clave</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-indigo-900 mb-2">namespace</h4>
+                        <p class="text-sm text-indigo-800">Organiza el código en "paquetes" para evitar conflictos de
+                            nombres</p>
+                        <code class="text-xs bg-indigo-100 px-2 py-1 rounded mt-2 block">namespace App\Models;</code>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-indigo-900 mb-2">use</h4>
+                        <p class="text-sm text-indigo-800">Importa clases de otros namespaces</p>
+                        <code class="text-xs bg-indigo-100 px-2 py-1 rounded mt-2 block">use App\Core\Database;</code>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-indigo-900 mb-2">self</h4>
+                        <p class="text-sm text-indigo-800">Referencia a la clase actual (para propiedades/métodos
+                            estáticos)</p>
+                        <code class="text-xs bg-indigo-100 px-2 py-1 rounded mt-2 block">self::$count++;</code>
+                    </div>
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="font-bold text-indigo-900 mb-2">$this</h4>
+                        <p class="text-sm text-indigo-800">Referencia al objeto actual (para propiedades/métodos de
+                            instancia)</p>
+                        <code class="text-xs bg-indigo-100 px-2 py-1 rounded mt-2 block">$this->price;</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. IMPORTS -->
+        <section id="imports" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">6. Importación de Archivos
+                PHP</h2>
+
+            <div class="space-y-6">
+                <h3 class="text-xl font-bold text-gray-800">📥 Tipos de Importación</h3>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 border">Comando</th>
+                                <th class="px-4 py-2 border">Error si no existe</th>
+                                <th class="px-4 py-2 border">Permite duplicados</th>
+                                <th class="px-4 py-2 border">Cuándo usar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">require</td>
+                                <td class="px-4 py-2 border text-center">❌ Fatal</td>
+                                <td class="px-4 py-2 border text-center">✅ Sí</td>
+                                <td class="px-4 py-2 border text-sm">Archivos críticos</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">require_once</td>
+                                <td class="px-4 py-2 border text-center">❌ Fatal</td>
+                                <td class="px-4 py-2 border text-center">❌ No</td>
+                                <td class="px-4 py-2 border text-sm">Clases (evitar redefinición)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">include</td>
+                                <td class="px-4 py-2 border text-center">⚠️ Warning</td>
+                                <td class="px-4 py-2 border text-center">✅ Sí</td>
+                                <td class="px-4 py-2 border text-sm">Archivos opcionales</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 border font-mono">include_once</td>
+                                <td class="px-4 py-2 border text-center">⚠️ Warning</td>
+                                <td class="px-4 py-2 border text-center">❌ No</td>
+                                <td class="px-4 py-2 border text-sm">Vistas parciales</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6">💡 Ejemplos del Proyecto</h3>
+
+                <div class="code-block">
+                    <p class="font-semibold text-sm text-gray-700 mb-2">En <code>public/index.php:</code></p>
+                    <pre><code class="language-php">&lt;?php
+// Cargar configuración (crítico, debe existir)
+require_once __DIR__ . '/../config.php';
+
+// Cargar clases (evitar redefinición)
+require_once __DIR__ . '/../app/Core/Database.php';
+require_once __DIR__ . '/../app/Models/User.php';
+require_once __DIR__ . '/../app/Models/Subscription.php';
+
+// Cargar vista (puede mostrar warning si no existe)
+include __DIR__ . '/../app/Views/dashboard.php';</code></pre>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mt-4">
+                    <p class="font-semibold text-green-900">✅ Buenas Prácticas:</p>
+                    <ul class="list-disc list-inside text-green-800 mt-2 space-y-1">
+                        <li>Usar <code>require_once</code> para clases y configuración</li>
+                        <li>Usar rutas absolutas con <code>__DIR__</code> para evitar problemas</li>
+                        <li>Cargar todas las dependencias al inicio del archivo</li>
+                        <li>Considerar usar Composer y autoloading en proyectos grandes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. MÉTODOS -->
+        <section id="metodos" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">7. Métodos del Proyecto
+            </h2>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🔍 Model: Subscription</h3>
+
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500">
+                            <h4 class="font-bold text-gray-900 mb-2">Subscription::all($userId)</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Qué hace:</strong> Obtiene todas las
+                                suscripciones activas de un usuario</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Recibe:</strong> <code>$userId</code> (int) -
+                                ID del usuario</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Devuelve:</strong> Array de suscripciones</p>
+                            <p class="text-sm text-gray-700"><strong>Cuándo se usa:</strong> Al cargar el dashboard o
+                                lista de suscripciones</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-green-500">
+                            <h4 class="font-bold text-gray-900 mb-2">Subscription::create($userId, $data)</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Qué hace:</strong> Inserta una nueva
+                                suscripción en la base de datos</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Recibe:</strong> <code>$userId</code> (int),
+                                <code>$data</code> (array con name, price, etc.)</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Devuelve:</strong> ID de la nueva suscripción
+                            </p>
+                            <p class="text-sm text-gray-700"><strong>Cuándo se usa:</strong> Al enviar el formulario de
+                                nueva suscripción</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-500">
+                            <h4 class="font-bold text-gray-900 mb-2">Subscription::calculateNextRenewal($startDate,
+                                $cycle)</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Qué hace:</strong> Calcula la próxima fecha de
+                                renovación según el ciclo</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Recibe:</strong> <code>$startDate</code>
+                                (string), <code>$cycle</code> (weekly|biweekly|monthly|yearly)</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Devuelve:</strong> Fecha en formato 'Y-m-d'
+                            </p>
+                            <p class="text-sm text-gray-700"><strong>Cuándo se usa:</strong> Al crear o actualizar una
+                                suscripción</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🎮 Controller: ApiController</h3>
+
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-purple-500">
+                            <h4 class="font-bold text-gray-900 mb-2">ApiController::index()</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Responsabilidad:</strong> Listar todas las
+                                suscripciones del usuario autenticado</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Flujo:</strong></p>
+                            <ol class="list-decimal list-inside text-sm text-gray-700 ml-4">
+                                <li>Obtiene el userId de la sesión</li>
+                                <li>Llama a <code>Subscription::all($userId)</code></li>
+                                <li>Devuelve JSON con las suscripciones</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-purple-500">
+                            <h4 class="font-bold text-gray-900 mb-2">ApiController::create()</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Responsabilidad:</strong> Procesar la creación
+                                de una nueva suscripción</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Flujo:</strong></p>
+                            <ol class="list-decimal list-inside text-sm text-gray-700 ml-4">
+                                <li>Lee el JSON del cuerpo de la petición</li>
+                                <li>Valida que tenga userId de sesión</li>
+                                <li>Llama a <code>Subscription::create()</code></li>
+                                <li>Devuelve respuesta de éxito o error</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🔐 Controller: AuthController</h3>
+
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-red-500">
+                            <h4 class="font-bold text-gray-900 mb-2">AuthController::login()</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Responsabilidad:</strong> Autenticar al
+                                usuario</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Flujo:</strong></p>
+                            <ol class="list-decimal list-inside text-sm text-gray-700 ml-4">
+                                <li>Recibe email y password del formulario</li>
+                                <li>Llama a <code>User::verify($email, $password)</code></li>
+                                <li>Si es válido, guarda userId en sesión</li>
+                                <li>Redirige al dashboard o devuelve error</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. FLUJO COMPLETO -->
+        <section id="flujo" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">8. Flujo Completo de la
+                Aplicación</h2>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🚀 1. Carga Inicial</h3>
+                    <div class="mermaid bg-white p-6 rounded-lg">
+                        graph TD
+                        A[Usuario accede a localhost:8000] --> B[public/index.php]
+                        B --> C[Cargar config.php]
+                        C --> D[Iniciar sesión PHP]
+                        D --> E{¿Usuario autenticado?}
+                        E -->|No| F[Redirigir a /login]
+                        E -->|Sí| G[Cargar dashboard.php]
+                        F --> H[Mostrar formulario login.php]
+                        G --> I[Dashboard renderizado]
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">📥 2. Solicitud de Datos (GET /api/subscriptions)
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700 ml-4">
+                        <li><strong>Frontend</strong> hace petición AJAX: <code>fetch('/api/subscriptions')</code></li>
+                        <li><strong>Router</strong> detecta la ruta y llama a <code>ApiController::index()</code></li>
+                        <li><strong>Controller</strong> obtiene $userId de la sesión</li>
+                        <li><strong>Controller</strong> llama a <code>Subscription::all($userId)</code></li>
+                        <li><strong>Model</strong> ejecuta: <code>SELECT * FROM subscriptions WHERE user_id = ?</code>
+                        </li>
+                        <li><strong>PDO</strong> devuelve array de resultados al Model</li>
+                        <li><strong>Model</strong> devuelve array al Controller</li>
+                        <li><strong>Controller</strong> convierte a JSON y envía respuesta</li>
+                        <li><strong>Frontend</strong> recibe JSON y actualiza la UI</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">➕ 3. Inserción (POST /api/subscriptions)</h3>
+                    <div class="code-block">
+                        <pre><code class="language-javascript">// FRONTEND: Envío de datos
+const data = {
+    name: "Netflix",
+    price: 15.99,
+    currency: "USD",
+    billing_cycle: "monthly",
+    start_date: "2026-01-18",
+    category: "Streaming",
+    color: "#e50914",
+    emoji: "📺"
+};
+
+fetch('/api/subscriptions', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+});</code></pre>
+                    </div>
+
+                    <p class="text-gray-700 mt-4 mb-2"><strong>Flujo en el backend:</strong></p>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Router detecta POST y llama a <code>ApiController::create()</code></li>
+                        <li>Controller lee el JSON: <code>json_decode(file_get_contents('php://input'))</code></li>
+                        <li>Controller llama a <code>Subscription::create($userId, $data)</code></li>
+                        <li>Model calcula <code>next_renewal</code> con <code>calculateNextRenewal()</code></li>
+                        <li>Model ejecuta INSERT con prepared statement</li>
+                        <li>Model devuelve el ID insertado</li>
+                        <li>Controller envía respuesta JSON de éxito</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">✏️ 4. Actualización (PUT /api/subscriptions/5)</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Frontend envía PUT con datos modificados</li>
+                        <li>Router extrae ID (5) de la URL con regex</li>
+                        <li>Controller llama a <code>Subscription::update($id, $userId, $data)</code></li>
+                        <li>Model ejecuta: <code>UPDATE subscriptions SET ... WHERE id = ? AND user_id = ?</code></li>
+                        <li>Doble validación de seguridad: solo actualiza si pertenece al usuario</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🗑️ 5. Eliminación (DELETE /api/subscriptions/5)
+                    </h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Frontend confirma acción con <code>confirm()</code></li>
+                        <li>Envía DELETE request</li>
+                        <li>Controller llama a <code>Subscription::delete($id, $userId)</code></li>
+                        <li>Model ejecuta: <code>DELETE FROM subscriptions WHERE id = ? AND user_id = ?</code></li>
+                        <li>Frontend refresca la lista</li>
+                    </ol>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                    <p class="font-semibold text-blue-900">🔒 Nota de Seguridad:</p>
+                    <p class="text-blue-800 mt-2">Todas las operaciones incluyen <code>user_id</code> en las consultas
+                        SQL para asegurar que un usuario solo pueda ver/modificar sus propios datos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. CONCLUSIÓN -->
+        <section id="conclusion" class="glass rounded-xl p-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-blue-500 pb-2">9. Conclusión y Próximos
+                Pasos</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🎉 Lo que has aprendido</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-900 mb-2">✅ Fundamentos PHP</h4>
+                            <ul class="text-sm text-green-800 space-y-1">
+                                <li>• Clases y POO</li>
+                                <li>• Namespaces y autoloading</li>
+                                <li>• PDO para base de datos</li>
+                                <li>• Manejo de sesiones</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-900 mb-2">✅ Arquitectura</h4>
+                            <ul class="text-sm text-green-800 space-y-1">
+                                <li>• Patrón MVC</li>
+                                <li>• Sistema de rutas</li>
+                                <li>• Separación de responsabilidades</li>
+                                <li>• API REST básica</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🚀 Recomendaciones para mejorar</h3>
+                    <div class="space-y-3">
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-900 mb-2">1. Implementar Composer</h4>
+                            <p class="text-sm text-yellow-800">Usa Composer para gestionar dependencias y autoloading
+                                automático (PSR-4)</p>
+                            <code
+                                class="text-xs bg-yellow-100 px-2 py-1 rounded mt-2 block">composer require vendor/package</code>
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-900 mb-2">2. Validación de datos</h4>
+                            <p class="text-sm text-yellow-800">Implementa validación robusta en los Controllers antes de
+                                guardar datos</p>
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-900 mb-2">3. Manejo de errores</h4>
+                            <p class="text-sm text-yellow-800">Usa try-catch y registra errores en archivos de log</p>
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-900 mb-2">4. Testing</h4>
+                            <p class="text-sm text-yellow-800">Aprende PHPUnit para escribir tests automáticos</p>
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-yellow-900 mb-2">5. Framework moderno</h4>
+                            <p class="text-sm text-yellow-800">Experimenta con Laravel o Symfony para proyectos más
+                                grandes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-xl text-center">
+                    <h3 class="text-2xl font-bold mb-2">¡Felicidades! 🎊</h3>
+                    <p>Has completado el manual de PHP con PayCalendar.</p>
+                    <p class="mt-2 text-sm">Ahora tienes las bases para construir aplicaciones web profesionales.</p>
+                </div>
+
+                <div class="text-center text-gray-600 text-sm mt-8">
+                    <p>Proyecto: <strong>PayCalendar</strong> | Manual creado para aprendizaje PHP</p>
+                    <p class="mt-1">Continúa practicando y construyendo proyectos reales 🚀</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p>&copy; 2026 PayCalendar - Manual de aprendizaje PHP</p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar Highlight.js
+        hljs.highlightAll();
+
+        // Inicializar Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: { useMaxWidth: true }
+        });
+
+        // Smooth scroll para navegación
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
