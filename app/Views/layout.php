@@ -18,7 +18,7 @@
 
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(7, minmax(0, 1fr));
         }
 
         .calendar-day {
@@ -33,7 +33,7 @@
 </head>
 
 <body class="bg-gray-50 text-gray-900 min-h-screen">
-    <nav class="glass sticky top-0 z-10 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+    <nav class="glass sticky top-0 z-10 border-b border-gray-200 px-6 py-4 flex justify-between items-center w-full">
         <div class="flex items-center space-x-4">
             <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
                 Subscription Calendar
@@ -52,7 +52,7 @@
         </div>
     </nav>
 
-    <main class="container mx-auto p-6">
+    <main class="w-full px-6 py-6">
         <?php echo $content; ?>
     </main>
 
@@ -88,19 +88,28 @@
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Ciclo de Cobro</label>
-                        <select name="billing_cycle" id="subCycle" required
-                            class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
-                            <option value="weekly">Semanal</option>
-                            <option value="monthly">Mensual</option>
-                            <option value="yearly">Anual</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ciclo de Cobro</label>
+                            <select name="billing_cycle" id="subCycle" required
+                                class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                                <option value="weekly">Semanal</option>
+                                <option value="biweekly">Quincenal</option>
+                                <option value="monthly">Mensual</option>
+                                <option value="yearly">Anual</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio</label>
+                            <input type="date" name="start_date" id="subStartDate" required
+                                class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio</label>
-                        <input type="date" name="start_date" id="subStartDate" required
-                            class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 font-bold">Fecha Fin
+                            (Opcional)</label>
+                        <input type="date" name="end_date" id="subEndDate"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>

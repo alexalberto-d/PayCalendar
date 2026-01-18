@@ -29,8 +29,8 @@ class Subscription
 
         $next_renewal = self::calculateNextRenewal($data['start_date'], $data['billing_cycle']);
 
-        $sql = "INSERT INTO subscriptions (user_id, name, price, currency, billing_cycle, start_date, next_renewal, category, color) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO subscriptions (user_id, name, price, currency, billing_cycle, start_date, next_renewal, category, color, end_date) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             $userId,
@@ -41,7 +41,8 @@ class Subscription
             $data['start_date'],
             $next_renewal,
             $data['category'],
-            $data['color']
+            $data['color'],
+            !empty($data['end_date']) ? $data['end_date'] : null
         ]);
 
         return $db->lastInsertId();
@@ -55,7 +56,7 @@ class Subscription
 
         $sql = "UPDATE subscriptions SET 
                 name = ?, price = ?, currency = ?, billing_cycle = ?, 
-                start_date = ?, next_renewal = ?, category = ?, color = ?
+                start_date = ?, next_renewal = ?, category = ?, color = ?, end_date = ?
                 WHERE id = ? AND user_id = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([
@@ -67,6 +68,7 @@ class Subscription
             $next_renewal,
             $data['category'],
             $data['color'],
+            !empty($data['end_date']) ? $data['end_date'] : null,
             $id,
             $userId
         ]);
@@ -93,6 +95,22 @@ class Subscription
         while ($date < $now) {
             if ($cycle === 'weekly') {
                 $date->modify('+1 week');
+            } elseif ($cycle === 'biweekly') {
+                $day = (int) $date->format('d');
+                $monthDayCount = (int) $date->format('t');
+
+                if ($day < 15) {
+                    $date->setDate((int) $date->format('Y'), (int) $date->format('m'), 15);
+                } else {
+                    // Go to next month 1st then calc 15 or EOM? 
+                    // Simpler: if it was 15, go to EOM. If it was EOM, go to next month 15.
+                    if ($day >= 15 && $day < $monthDayCount) {
+                        $date->setDate((int) $date->format('Y'), (int) $date->format('m'), $monthDayCount);
+                    } else {
+                        $date->modify('first day of next month');
+                        $date->setDate((int) $date->format('Y'), (int) $date->format('m'), 15);
+                    }
+                }
             } elseif ($cycle === 'monthly') {
                 $date->modify('+1 month');
             } elseif ($cycle === 'yearly') {

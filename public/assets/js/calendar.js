@@ -102,6 +102,12 @@ class Calendar {
 
         if (targetDate < startDate) return false;
 
+        // Check end date if exists
+        if (sub.end_date) {
+            const endDate = new Date(sub.end_date + 'T00:00:00');
+            if (targetDate > endDate) return false;
+        }
+
         const cycle = sub.billing_cycle;
 
         if (cycle === 'weekly') {
@@ -110,11 +116,15 @@ class Calendar {
             return diffDays % 7 === 0;
         }
 
+        if (cycle === 'biweekly') {
+            const day = targetDate.getDate();
+            const lastDayOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0).getDate();
+            return day === 15 || day === lastDayOfMonth;
+        }
+
         if (cycle === 'monthly') {
             const startDay = startDate.getDate();
             const targetDay = targetDate.getDate();
-
-            // Handle end of month (e.g., if started on 31st, show on 30th or 28th)
             const lastDayOfTargetMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0).getDate();
 
             if (startDay >= lastDayOfTargetMonth) {

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calendar = new Calendar('calendarDays', 'currentMonthYear');
     let subscriptions = [];
     let radarChart = null;
+    let doughnutChart = null;
 
     // Elements
     const addBtn = document.getElementById('addSubscriptionBtn');
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCategories();
         calendar.setSubscriptions(subscriptions);
         renderUpcoming();
-        updateRadarChart();
+        updateCharts();
     }
 
     function updateStats() {
@@ -39,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (s.billing_cycle === 'weekly') {
                 normalizedMonthly = (price * 52) / 12;
+            } else if (s.billing_cycle === 'biweekly') {
+                normalizedMonthly = price * 2;
             } else if (s.billing_cycle === 'monthly') {
                 normalizedMonthly = price;
             } else if (s.billing_cycle === 'yearly') {
@@ -60,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateCategories() {
         const categories = [...new Set(subscriptions.map(s => s.category))];
         const currentFilter = filterCategory.value;
-        filterCategory.innerHTML = '<option value="">Todas las categorías</option>';
+        filterCategory.innerHTML = '<option value="">Categorías</option>';
         categories.forEach(cat => {
             const opt = document.createElement('option');
             opt.value = cat;
@@ -70,58 +73,66 @@ document.addEventListener('DOMContentLoaded', () => {
         filterCategory.value = currentFilter;
     }
 
-    function updateRadarChart() {
-        const ctx = document.getElementById('radarChart').getContext('2d');
+    function updateCharts() {
+        if (subscriptions.length === 0) return;
 
-        // Group by category
+        // 1. Radar Chart: Spending by Category
         const catData = {};
         subscriptions.forEach(s => {
             const price = parseFloat(s.price);
             let monthly = 0;
             if (s.billing_cycle === 'weekly') monthly = (price * 52) / 12;
+            else if (s.billing_cycle === 'biweekly') monthly = price * 2;
             else if (s.billing_cycle === 'monthly') monthly = price;
             else if (s.billing_cycle === 'yearly') monthly = price / 12;
-
             catData[s.category] = (catData[s.category] || 0) + monthly;
         });
 
-        const labels = Object.keys(catData);
-        const data = Object.values(catData);
-
-        if (radarChart) {
-            radarChart.destroy();
-        }
-
-        if (labels.length === 0) return;
-
-        radarChart = new Chart(ctx, {
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        if (radarChart) radarChart.destroy();
+        radarChart = new Chart(ctxRadar, {
             type: 'radar',
             data: {
-                labels: labels,
+                labels: Object.keys(catData),
                 datasets: [{
-                    label: 'Gasto Mensual',
-                    data: data,
+                    label: 'Gasto',
+                    data: Object.values(catData),
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     borderColor: 'rgba(59, 130, 246, 1)',
                     borderWidth: 2,
-                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        angleLines: { display: true },
-                        suggestedMin: 0,
-                        ticks: { display: false }
-                    }
-                },
+                scales: { r: { angleLines: { display: true }, suggestedMin: 0, ticks: { display: false } } },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 2. Doughnut Chart: Distribution by Cycle
+        const cycleData = { 'weekly': 0, 'biweekly': 0, 'monthly': 0, 'yearly': 0 };
+        subscriptions.forEach(s => cycleData[s.billing_cycle]++);
+
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        if (doughnutChart) doughnutChart.destroy();
+        doughnutChart = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Semanal', 'Quincenal', 'Mensual', 'Anual'],
+                datasets: [{
+                    data: [cycleData.weekly, cycleData.biweekly, cycleData.monthly, cycleData.yearly],
+                    backgroundColor: ['#60a5fa', '#34d399', '#4f46e5', '#8b5cf6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
                 plugins: {
-                    legend: { display: false }
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
                 }
             }
         });
@@ -132,35 +143,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
-        // For simple demo, we just show the literal next_renewal from DB
         const sorted = [...subscriptions]
             .filter(s => new Date(s.next_renewal) >= now)
-            .sort((a, b) => new Date(a.next_renewal) - new Date(b.next_renewal))
-            .slice(0, 5);
+            .sort((a, b) => new Date(a.next_renewal) - new Date(b.next_renewal));
 
         if (sorted.length === 0) {
-            upcomingList.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">No hay cobros próximos</p>';
+            upcomingList.innerHTML = '<p class="text-xs text-gray-400 text-center py-10">No hay cobros próximos</p>';
             return;
         }
 
         sorted.forEach(sub => {
             const card = document.createElement('div');
-            card.className = 'group bg-white p-4 rounded-xl border border-gray-100 flex items-center justify-between hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer';
+            card.className = 'group bg-white p-3 rounded-xl border border-gray-100 flex items-center justify-between hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer';
             card.onclick = () => openModal(sub);
 
             const statusColor = Utils.getStatusColor(sub.next_renewal);
 
             card.innerHTML = `
                 <div class="flex items-center space-x-3">
-                    <div class="w-2 h-10 rounded-full" style="background-color: ${sub.color}"></div>
+                    <div class="w-1.5 h-8 rounded-full" style="background-color: ${sub.color}"></div>
                     <div>
-                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">${sub.name}</h4>
-                        <p class="text-[10px] text-gray-400 uppercase font-semibold">${sub.category}</p>
+                        <h4 class="font-bold text-gray-900 text-[13px] group-hover:text-blue-600 transition-colors leading-tight">${sub.name}</h4>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tight">${sub.category}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-gray-900 text-sm">${Utils.formatCurrency(sub.price, sub.currency)}</p>
-                    <p class="text-[10px] uppercase font-bold ${statusColor.split(' ')[0]}">${Utils.getRelativeTime(sub.next_renewal)}</p>
+                    <p class="font-bold text-gray-900 text-[13px] leading-tight">${Utils.formatCurrency(sub.price, sub.currency)}</p>
+                    <p class="text-[9px] uppercase font-bold ${statusColor.split(' ')[0]}">${Utils.getRelativeTime(sub.next_renewal)}</p>
                 </div>
             `;
             upcomingList.appendChild(card);
@@ -178,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('subCurrency').value = sub.currency;
             document.getElementById('subCycle').value = sub.billing_cycle;
             document.getElementById('subStartDate').value = sub.start_date;
+            document.getElementById('subEndDate').value = sub.end_date || '';
             document.getElementById('subCategory').value = sub.category;
             document.getElementById('subColor').value = sub.color;
             deleteBtn.classList.remove('hidden');
@@ -186,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             subForm.reset();
             document.getElementById('subId').value = '';
             document.getElementById('subStartDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('subEndDate').value = '';
             document.getElementById('subColor').value = '#3b82f6';
             deleteBtn.classList.add('hidden');
         }
