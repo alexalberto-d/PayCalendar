@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Core;
+
+use PDO;
+use PDOException;
+
+class Database
+{
+    private static $instance = null;
+    private $connection;
+
+    private function __construct()
+    {
+        try {
+            $this->connection = new PDO("sqlite:" . DB_PATH);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+            // Initialize if empty
+            $this->init();
+        } catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+    }
+
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    private function init()
+    {
+        $schema = file_get_contents(__DIR__ . '/../../database/schema.sql');
+        $this->connection->exec($schema);
+    }
+}

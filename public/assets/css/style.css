@@ -1,0 +1,35 @@
+/* Custom transitions and scrollbar */
+.calendar-day {
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #f9fafb;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+main {
+    animation: fadeIn 0.4s ease-out;
+}
