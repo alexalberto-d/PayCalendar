@@ -79,5 +79,21 @@ class Database
             } catch (PDOException $e) {
             }
         }
+
+        // Check if emoji exists
+        $hasEmoji = false;
+        foreach ($columns as $column) {
+            if ($column['name'] === 'emoji') {
+                $hasEmoji = true;
+                break;
+            }
+        }
+
+        if (!$hasEmoji) {
+            try {
+                $this->connection->exec("ALTER TABLE subscriptions ADD COLUMN emoji VARCHAR(10) DEFAULT ''");
+            } catch (PDOException $e) {
+            }
+        }
     }
 }

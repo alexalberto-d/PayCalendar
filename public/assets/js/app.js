@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeSubsEl = document.getElementById('activeSubscriptions');
     const mostExpensiveEl = document.getElementById('mostExpensive');
     const upcomingList = document.getElementById('upcomingList');
+    const emojiPicker = document.getElementById('emojiPicker');
+    const subEmoji = document.getElementById('subEmoji');
+
+    const commonEmojis = ['🚀', '📺', '🎵', '🎮', '💻', '💡', '🏠', '🛒', '🍔', '💪', '🏥', '🔌', '📦', '📱', '📡', '🛡️', '⚡', '☕', '🎨', '👔'];
 
     // Fetch Subscriptions
     async function fetchSubscriptions() {
@@ -163,7 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="flex items-center space-x-3">
                     <div class="w-1.5 h-8 rounded-full" style="background-color: ${sub.color}"></div>
                     <div>
-                        <h4 class="font-bold text-gray-900 text-[13px] group-hover:text-blue-600 transition-colors leading-tight">${sub.name}</h4>
+                        <h4 class="font-bold text-gray-900 text-[13px] group-hover:text-blue-600 transition-colors leading-tight">
+                            ${sub.emoji ? sub.emoji + ' ' : ''}${sub.name}
+                        </h4>
                         <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tight">${sub.category}</p>
                     </div>
                 </div>
@@ -188,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('subCycle').value = sub.billing_cycle;
             document.getElementById('subStartDate').value = sub.start_date;
             document.getElementById('subEndDate').value = sub.end_date || '';
+            document.getElementById('subEmoji').value = sub.emoji || '';
             document.getElementById('subCategory').value = sub.category;
             document.getElementById('subColor').value = sub.color;
             deleteBtn.classList.remove('hidden');
@@ -197,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('subId').value = '';
             document.getElementById('subStartDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('subEndDate').value = '';
+            document.getElementById('subEmoji').value = '';
             document.getElementById('subColor').value = '#3b82f6';
             deleteBtn.classList.add('hidden');
         }
@@ -251,6 +259,34 @@ document.addEventListener('DOMContentLoaded', () => {
             calendar.setSubscriptions(subscriptions);
         }
     };
+
+    // Emoji Picker Logic
+    function initEmojiPicker() {
+        commonEmojis.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'text-xl hover:bg-gray-100 rounded p-1 transition-all';
+            btn.textContent = emoji;
+            btn.onclick = () => {
+                subEmoji.value = emoji;
+                emojiPicker.classList.add('hidden');
+            };
+            emojiPicker.appendChild(btn);
+        });
+    }
+
+    subEmoji.onclick = (e) => {
+        e.stopPropagation();
+        emojiPicker.classList.toggle('hidden');
+    };
+
+    document.addEventListener('click', (e) => {
+        if (!emojiPicker.contains(e.target) && e.target !== subEmoji) {
+            emojiPicker.classList.add('hidden');
+        }
+    });
+
+    initEmojiPicker();
 
     window.addEventListener('editSubscription', (e) => openModal(e.detail));
 

@@ -29,8 +29,8 @@ class Subscription
 
         $next_renewal = self::calculateNextRenewal($data['start_date'], $data['billing_cycle']);
 
-        $sql = "INSERT INTO subscriptions (user_id, name, price, currency, billing_cycle, start_date, next_renewal, category, color, end_date) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO subscriptions (user_id, name, price, currency, billing_cycle, start_date, next_renewal, category, color, end_date, emoji) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             $userId,
@@ -42,7 +42,8 @@ class Subscription
             $next_renewal,
             $data['category'],
             $data['color'],
-            !empty($data['end_date']) ? $data['end_date'] : null
+            !empty($data['end_date']) ? $data['end_date'] : null,
+            $data['emoji'] ?? ''
         ]);
 
         return $db->lastInsertId();
@@ -56,7 +57,7 @@ class Subscription
 
         $sql = "UPDATE subscriptions SET 
                 name = ?, price = ?, currency = ?, billing_cycle = ?, 
-                start_date = ?, next_renewal = ?, category = ?, color = ?, end_date = ?
+                start_date = ?, next_renewal = ?, category = ?, color = ?, end_date = ?, emoji = ?
                 WHERE id = ? AND user_id = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([
@@ -69,6 +70,7 @@ class Subscription
             $data['category'],
             $data['color'],
             !empty($data['end_date']) ? $data['end_date'] : null,
+            $data['emoji'] ?? '',
             $id,
             $userId
         ]);

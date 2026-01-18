@@ -59,18 +59,32 @@
     <!-- Modal Placeholder -->
     <div id="modalContainer"
         class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-2xl">
                 <h3 class="text-lg font-bold" id="modalTitle">Suscripción</h3>
-                <button id="closeModal" class="text-gray-400 hover:text-gray-600">&times;</button>
+                <button id="closeModal"
+                    class="text-gray-400 hover:text-gray-600 font-bold text-2xl leading-none">&times;</button>
             </div>
             <div class="p-6">
                 <form id="subscriptionForm" class="space-y-4">
                     <input type="hidden" name="id" id="subId">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                        <input type="text" name="name" id="subName" required
-                            class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="col-span-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                            <input type="text" name="name" id="subName" required
+                                class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Emoji</label>
+                            <div class="relative">
+                                <input type="text" name="emoji" id="subEmoji" placeholder="🚀" readonly
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-center cursor-pointer">
+                                <div id="emojiPicker"
+                                    class="hidden absolute bottom-full mb-2 left-0 bg-white border border-gray-100 shadow-xl rounded-xl p-3 grid grid-cols-5 gap-2 z-50 w-48 max-h-48 overflow-y-auto custom-scrollbar">
+                                    <!-- Emojis will be injected here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>

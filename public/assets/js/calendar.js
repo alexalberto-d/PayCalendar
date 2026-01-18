@@ -55,7 +55,7 @@ class Calendar {
                 const badge = document.createElement('div');
                 badge.className = 'mt-1 px-2 py-0.5 text-[10px] rounded text-white truncate cursor-pointer hover:brightness-110';
                 badge.style.backgroundColor = sub.color;
-                badge.textContent = `${sub.name} (${Utils.formatCurrency(sub.price, sub.currency)})`;
+                badge.textContent = `${sub.emoji ? sub.emoji + ' ' : ''}${sub.name} (${Utils.formatCurrency(sub.price, sub.currency)})`;
                 badge.onclick = (e) => {
                     e.stopPropagation();
                     window.dispatchEvent(new CustomEvent('editSubscription', { detail: sub }));
