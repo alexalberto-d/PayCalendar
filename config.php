@@ -1,7 +1,7 @@
 <?php
 
 define('DB_PATH', __DIR__ . '/database/database.sqlite');
-define('APP_NAME', 'Subscription Calendar');
+define('APP_NAME', 'PayCalendar');
 
 // Error reporting for development
 ini_set('display_errors', 1);

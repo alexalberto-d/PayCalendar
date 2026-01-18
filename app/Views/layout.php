@@ -36,7 +36,7 @@
     <nav class="glass sticky top-0 z-10 border-b border-gray-200 px-6 py-4 flex justify-between items-center w-full">
         <div class="flex items-center space-x-4">
             <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                Subscription Calendar
+                PayCalendar
             </h1>
             <span class="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-1 rounded-lg">
                 <?php echo $_SESSION['user_email']; ?>

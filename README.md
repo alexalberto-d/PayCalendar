@@ -1,6 +1,8 @@
-# Subscription Calendar
+# PayCalendar 🚀
 
 Aplicación web para el seguimiento de suscripciones y gastos.
+
+![](paycalendar.jpg)
 
 ## Funcionalidades
 - Registrar suscripciones con ciclo de cobro (semanal, mensual, anual).
