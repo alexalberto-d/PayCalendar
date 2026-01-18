@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const calendar = new Calendar('calendarDays', 'currentMonthYear');
     let subscriptions = [];
+    let radarChart = null;
 
     // Elements
     const addBtn = document.getElementById('addSubscriptionBtn');
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalMonthlyEl = document.getElementById('totalMonthly');
     const totalYearlyEl = document.getElementById('totalYearly');
     const activeSubsEl = document.getElementById('activeSubscriptions');
+    const mostExpensiveEl = document.getElementById('mostExpensive');
     const upcomingList = document.getElementById('upcomingList');
 
     // Fetch Subscriptions
@@ -24,28 +26,35 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCategories();
         calendar.setSubscriptions(subscriptions);
         renderUpcoming();
+        updateRadarChart();
     }
 
     function updateStats() {
         let monthly = 0;
-        let yearly = 0;
+        let maxPrice = 0;
 
         subscriptions.forEach(s => {
             const price = parseFloat(s.price);
+            let normalizedMonthly = 0;
+
             if (s.billing_cycle === 'weekly') {
-                monthly += (price * 52) / 12;
+                normalizedMonthly = (price * 52) / 12;
             } else if (s.billing_cycle === 'monthly') {
-                monthly += price;
+                normalizedMonthly = price;
             } else if (s.billing_cycle === 'yearly') {
-                monthly += price / 12;
+                normalizedMonthly = price / 12;
             }
+
+            monthly += normalizedMonthly;
+            if (normalizedMonthly > maxPrice) maxPrice = normalizedMonthly;
         });
 
-        yearly = monthly * 12;
+        const yearly = monthly * 12;
 
         totalMonthlyEl.textContent = Utils.formatCurrency(monthly);
         totalYearlyEl.textContent = Utils.formatCurrency(yearly);
         activeSubsEl.textContent = subscriptions.length;
+        mostExpensiveEl.textContent = Utils.formatCurrency(maxPrice);
     }
 
     function updateCategories() {
@@ -61,33 +70,97 @@ document.addEventListener('DOMContentLoaded', () => {
         filterCategory.value = currentFilter;
     }
 
+    function updateRadarChart() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+
+        // Group by category
+        const catData = {};
+        subscriptions.forEach(s => {
+            const price = parseFloat(s.price);
+            let monthly = 0;
+            if (s.billing_cycle === 'weekly') monthly = (price * 52) / 12;
+            else if (s.billing_cycle === 'monthly') monthly = price;
+            else if (s.billing_cycle === 'yearly') monthly = price / 12;
+
+            catData[s.category] = (catData[s.category] || 0) + monthly;
+        });
+
+        const labels = Object.keys(catData);
+        const data = Object.values(catData);
+
+        if (radarChart) {
+            radarChart.destroy();
+        }
+
+        if (labels.length === 0) return;
+
+        radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Gasto Mensual',
+                    data: data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
     function renderUpcoming() {
         upcomingList.innerHTML = '';
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
+        // For simple demo, we just show the literal next_renewal from DB
         const sorted = [...subscriptions]
             .filter(s => new Date(s.next_renewal) >= now)
             .sort((a, b) => new Date(a.next_renewal) - new Date(b.next_renewal))
-            .slice(0, 6);
+            .slice(0, 5);
+
+        if (sorted.length === 0) {
+            upcomingList.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">No hay cobros próximos</p>';
+            return;
+        }
 
         sorted.forEach(sub => {
             const card = document.createElement('div');
-            card.className = 'bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition-all cursor-pointer';
+            card.className = 'group bg-white p-4 rounded-xl border border-gray-100 flex items-center justify-between hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer';
             card.onclick = () => openModal(sub);
 
-            const colorClass = Utils.getStatusColor(sub.next_renewal);
+            const statusColor = Utils.getStatusColor(sub.next_renewal);
 
             card.innerHTML = `
-                <div>
-                    <h4 class="font-bold text-gray-900">${sub.name}</h4>
-                    <p class="text-xs text-gray-500">${sub.category} • ${sub.billing_cycle}</p>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-10 rounded-full" style="background-color: ${sub.color}"></div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">${sub.name}</h4>
+                        <p class="text-[10px] text-gray-400 uppercase font-semibold">${sub.category}</p>
+                    </div>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-blue-600">${Utils.formatCurrency(sub.price, sub.currency)}</p>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${colorClass}">
-                        ${Utils.getRelativeTime(sub.next_renewal)}
-                    </span>
+                    <p class="font-bold text-gray-900 text-sm">${Utils.formatCurrency(sub.price, sub.currency)}</p>
+                    <p class="text-[10px] uppercase font-bold ${statusColor.split(' ')[0]}">${Utils.getRelativeTime(sub.next_renewal)}</p>
                 </div>
             `;
             upcomingList.appendChild(card);
