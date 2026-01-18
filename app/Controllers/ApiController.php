@@ -6,9 +6,21 @@ use App\Models\Subscription;
 
 class ApiController
 {
+    private $userId;
+
+    public function __construct()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+        $this->userId = $_SESSION['user_id'];
+    }
+
     public function index()
     {
-        $subscriptions = Subscription::all();
+        $subscriptions = Subscription::all($this->userId);
         header('Content-Type: application/json');
         echo json_encode($subscriptions);
     }
@@ -20,7 +32,7 @@ class ApiController
             $data = $_POST;
 
         try {
-            $id = Subscription::create($data);
+            $id = Subscription::create($this->userId, $data);
             header('Content-Type: application/json');
             echo json_encode(['status' => 'success', 'id' => $id]);
         } catch (\Exception $e) {
@@ -35,7 +47,7 @@ class ApiController
         $data = json_decode(file_get_contents('php://input'), true);
 
         try {
-            Subscription::update($id, $data);
+            Subscription::update($id, $this->userId, $data);
             header('Content-Type: application/json');
             echo json_encode(['status' => 'success']);
         } catch (\Exception $e) {
@@ -48,7 +60,7 @@ class ApiController
     {
         $id = intval($id);
         try {
-            Subscription::delete($id);
+            Subscription::delete($id, $this->userId);
             header('Content-Type: application/json');
             echo json_encode(['status' => 'success']);
         } catch (\Exception $e) {

@@ -41,5 +41,30 @@ class Database
     {
         $schema = file_get_contents(__DIR__ . '/../../database/schema.sql');
         $this->connection->exec($schema);
+        $this->migrate();
+    }
+
+    private function migrate()
+    {
+        // Check if user_id exists in subscriptions
+        $stmt = $this->connection->query("PRAGMA table_info(subscriptions)");
+        $columns = $stmt->fetchAll();
+        $hasUserId = false;
+        foreach ($columns as $column) {
+            if ($column['name'] === 'user_id') {
+                $hasUserId = true;
+                break;
+            }
+        }
+
+        if (!$hasUserId) {
+            try {
+                // Since SQLite doesn't support adding FK in ALTER, we just add the column.
+                // For a proper migration we'd need to recreate the table, but this is a simple fix for existing data.
+                $this->connection->exec("ALTER TABLE subscriptions ADD COLUMN user_id INTEGER DEFAULT 0");
+            } catch (PDOException $e) {
+                // Already exists or other error
+            }
+        }
     }
 }

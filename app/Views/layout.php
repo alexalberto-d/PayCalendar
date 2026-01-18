@@ -33,13 +33,22 @@
 
 <body class="bg-gray-50 text-gray-900 min-h-screen">
     <nav class="glass sticky top-0 z-10 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-            Subscription Calendar
-        </h1>
-        <button id="addSubscriptionBtn"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-md active:scale-95">
-            + Nueva Suscripción
-        </button>
+        <div class="flex items-center space-x-4">
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                Subscription Calendar
+            </h1>
+            <span class="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-1 rounded-lg">
+                <?php echo $_SESSION['user_email']; ?>
+            </span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/logout" class="text-sm text-gray-500 hover:text-red-600 font-medium transition-colors">Cerrar
+                Sesión</a>
+            <button id="addSubscriptionBtn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-md active:scale-95">
+                + Nueva Suscripción
+            </button>
+        </div>
     </nav>
 
     <main class="container mx-auto p-6">

@@ -7,31 +7,33 @@ use DateTime;
 
 class Subscription
 {
-    public static function all()
+    public static function all($userId)
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->query("SELECT * FROM subscriptions WHERE active = 1 ORDER BY next_renewal ASC");
+        $stmt = $db->prepare("SELECT * FROM subscriptions WHERE user_id = ? AND active = 1 ORDER BY next_renewal ASC");
+        $stmt->execute([$userId]);
         return $stmt->fetchAll();
     }
 
-    public static function find($id)
+    public static function find($id, $userId)
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM subscriptions WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $db->prepare("SELECT * FROM subscriptions WHERE id = ? AND user_id = ?");
+        $stmt->execute([$id, $userId]);
         return $stmt->fetch();
     }
 
-    public static function create($data)
+    public static function create($userId, $data)
     {
         $db = Database::getInstance()->getConnection();
 
         $next_renewal = self::calculateNextRenewal($data['start_date'], $data['billing_cycle']);
 
-        $sql = "INSERT INTO subscriptions (name, price, currency, billing_cycle, start_date, next_renewal, category, color) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO subscriptions (user_id, name, price, currency, billing_cycle, start_date, next_renewal, category, color) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
+            $userId,
             $data['name'],
             $data['price'],
             $data['currency'] ?? 'USD',
@@ -45,19 +47,16 @@ class Subscription
         return $db->lastInsertId();
     }
 
-    public static function update($id, $data)
+    public static function update($id, $userId, $data)
     {
         $db = Database::getInstance()->getConnection();
 
-        // If start_date or billing_cycle changed, recalculate next_renewal
-        // For simplicity in this version, we always recalculate based on the provided start_date
-        // or just let the user provide next_renewal? No, better calculate it.
         $next_renewal = self::calculateNextRenewal($data['start_date'], $data['billing_cycle']);
 
         $sql = "UPDATE subscriptions SET 
                 name = ?, price = ?, currency = ?, billing_cycle = ?, 
                 start_date = ?, next_renewal = ?, category = ?, color = ?
-                WHERE id = ?";
+                WHERE id = ? AND user_id = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             $data['name'],
@@ -68,15 +67,16 @@ class Subscription
             $next_renewal,
             $data['category'],
             $data['color'],
-            $id
+            $id,
+            $userId
         ]);
     }
 
-    public static function delete($id)
+    public static function delete($id, $userId)
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("DELETE FROM subscriptions WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $db->prepare("DELETE FROM subscriptions WHERE id = ? AND user_id = ?");
+        $stmt->execute([$id, $userId]);
     }
 
     public static function calculateNextRenewal($startDate, $cycle)
